@@ -107,7 +107,3 @@ minecraft-html/
 - No multiplayer
 - No save/load (world resets on refresh)
 - Requires a browser with WebGL support (all modern browsers)
-
-## License
-
-Public domain — do whatever you want with it!
