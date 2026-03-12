@@ -1,0 +1,258 @@
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  overflow: hidden;
+  background: #000;
+  font-family: 'Courier New', monospace;
+}
+
+#game {
+  display: block;
+  width: 100vw;
+  height: 100vh;
+}
+
+/* Crosshair */
+#crosshair {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  color: white;
+  font-size: 24px;
+  pointer-events: none;
+  z-index: 10;
+  mix-blend-mode: difference;
+}
+
+/* Hotbar */
+#hotbar {
+  position: fixed;
+  bottom: 10px;
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  gap: 2px;
+  z-index: 10;
+}
+
+.hotbar-slot {
+  width: 50px;
+  height: 50px;
+  border: 2px solid #555;
+  background: rgba(0, 0, 0, 0.6);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+}
+
+.hotbar-slot.active {
+  border-color: #fff;
+  border-width: 3px;
+}
+
+.hotbar-slot .block-icon {
+  width: 36px;
+  height: 36px;
+  border-radius: 2px;
+}
+
+.hotbar-slot .slot-count {
+  position: absolute;
+  bottom: 1px;
+  right: 3px;
+  color: white;
+  font-size: 10px;
+  text-shadow: 1px 1px #000;
+}
+
+/* Inventory */
+.hidden { display: none !important; }
+
+#inventory-overlay, #keybind-overlay, #pause-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.7);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 100;
+}
+
+#inventory-panel {
+  background: #8B8B8B;
+  border: 3px solid #555;
+  padding: 10px;
+  min-width: 400px;
+  box-shadow: inset 2px 2px 0 #C6C6C6, inset -2px -2px 0 #555;
+}
+
+#inv-tabs {
+  display: flex;
+  gap: 4px;
+  margin-bottom: 8px;
+}
+
+.inv-tab {
+  padding: 6px 16px;
+  background: #6B6B6B;
+  border: 2px solid #555;
+  color: #DDD;
+  cursor: pointer;
+  font-family: 'Courier New', monospace;
+  font-size: 12px;
+}
+
+.inv-tab.active {
+  background: #8B8B8B;
+  border-bottom-color: #8B8B8B;
+  color: #FFF;
+}
+
+#inv-content {
+  min-height: 200px;
+  margin-bottom: 8px;
+}
+
+.inv-grid {
+  display: grid;
+  grid-template-columns: repeat(9, 40px);
+  gap: 2px;
+}
+
+.inv-slot {
+  width: 40px;
+  height: 40px;
+  background: #555;
+  border: 1px solid #333;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  position: relative;
+}
+
+.inv-slot:hover {
+  border-color: #FFF;
+}
+
+.inv-slot .block-icon {
+  width: 28px;
+  height: 28px;
+  border-radius: 2px;
+}
+
+.inv-label {
+  color: #DDD;
+  font-size: 11px;
+  margin: 6px 0 4px;
+}
+
+#inv-hotbar-slots {
+  display: grid;
+  grid-template-columns: repeat(9, 40px);
+  gap: 2px;
+}
+
+/* Creative scroll area */
+.creative-grid {
+  display: grid;
+  grid-template-columns: repeat(9, 40px);
+  gap: 2px;
+  max-height: 250px;
+  overflow-y: auto;
+}
+
+/* Keybind panel */
+#keybind-panel {
+  background: #8B8B8B;
+  border: 3px solid #555;
+  padding: 16px;
+  min-width: 350px;
+  box-shadow: inset 2px 2px 0 #C6C6C6, inset -2px -2px 0 #555;
+}
+
+#keybind-panel h2 {
+  color: #FFF;
+  text-align: center;
+  margin-bottom: 12px;
+  font-size: 16px;
+}
+
+.keybind-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 4px 0;
+  border-bottom: 1px solid #6B6B6B;
+}
+
+.keybind-row span {
+  color: #DDD;
+  font-size: 12px;
+}
+
+.keybind-btn {
+  padding: 4px 12px;
+  background: #555;
+  border: 2px solid #333;
+  color: #FFF;
+  cursor: pointer;
+  font-family: 'Courier New', monospace;
+  font-size: 11px;
+  min-width: 80px;
+  text-align: center;
+}
+
+.keybind-btn.listening {
+  background: #AA3333;
+  border-color: #FF5555;
+}
+
+#keybind-close, #resume-btn {
+  display: block;
+  margin: 12px auto 0;
+  padding: 6px 24px;
+  background: #555;
+  border: 2px solid #333;
+  color: #FFF;
+  cursor: pointer;
+  font-family: 'Courier New', monospace;
+}
+
+#keybind-close:hover, #resume-btn:hover {
+  background: #6B6B6B;
+}
+
+/* Pause */
+#pause-panel {
+  background: #8B8B8B;
+  border: 3px solid #555;
+  padding: 20px 40px;
+  text-align: center;
+  box-shadow: inset 2px 2px 0 #C6C6C6, inset -2px -2px 0 #555;
+}
+
+#pause-panel h2 {
+  color: #FFF;
+  margin-bottom: 16px;
+}
+
+/* Debug */
+#debug-info {
+  position: fixed;
+  top: 8px;
+  left: 8px;
+  color: #FFF;
+  font-size: 11px;
+  font-family: 'Courier New', monospace;
+  z-index: 10;
+  pointer-events: none;
+  text-shadow: 1px 1px #000;
+  line-height: 1.4;
+}
