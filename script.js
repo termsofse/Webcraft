@@ -263,10 +263,10 @@ function isVisible(x, y, z) {
 }
 
 // 1. Create the wireframe geometry (BoxGeometry)
-const boxGeo = new THREE.BoxGeometry(1.005, 1.005, 1.005); // Slightly larger to prevent flickering
+const boxGeothing = new THREE.BoxGeometry(1.005, 1.005, 1.005); // Slightly larger to prevent flickering
 
 // 2. Use EdgesGeometry to ONLY get the outer edges (removes diagonals)
-const edges = new THREE.EdgesGeometry(boxGeo);
+const edges = new THREE.EdgesGeometry(boxGeothing);
 
 // 3. Use LineBasicMaterial for the color and thickness
 const highlightMat = new THREE.LineBasicMaterial({ 
