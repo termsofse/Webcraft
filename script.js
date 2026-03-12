@@ -269,7 +269,6 @@ const highlightMesh = new THREE.Mesh(highlightGeo, highlightMat);
 highlightMesh.visible = false;
 scene.add(highlightMesh);
 
-
 rebuildMeshes();
 
 // ============================================================
