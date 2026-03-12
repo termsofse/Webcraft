@@ -33,7 +33,7 @@ const BLOCKS = {
   5:  { name: "Oak Log",     solid: true,  topTex: "oak_log_top.png",  top: 0xA08050, sideTex: "oak_log_side.png",side: 0x6B5234, bottomTex: "oak_log_top.png", bottom: 0xA08050 },
   6:  { name: "Oak Planks",  solid: true,  topTex: "oak_planks.png",   top: 0xBC9862, sideTex: "oak_planks.png", side: 0xBC9862, bottomTex: "oak_planks.png",  bottom: 0xBC9862 },
   7:  { name: "Sand",        solid: true,  topTex: "sand.png",         top: 0xDBD3A0, sideTex: "sand.png",       side: 0xDBD3A0, bottomTex: "sand.png",        bottom: 0xDBD3A0 },
-  8:  { name: "Glass",       solid: true,  topTex: "glass.png",        top: 0xC0E8FF, sideTex: "glass.png",      side: 0xC0E8FF, bottomTex: "glass.png",       bottom: 0xC0E8FF, transparent: true, opacity: 0.5 },
+  8:  { name: "Glass",       solid: true,  topTex: "glass.png",        top: 0xC0E8FF, sideTex: "glass.png",      side: 0xC0E8FF, bottomTex: "glass.png",       bottom: 0xC0E8FF, transparent: true},
   9:  { name: "Brick",       solid: true,  topTex: "brick.png",        top: 0x9B4A3C, sideTex: "brick.png",      side: 0x9B4A3C, bottomTex: "brick.png",       bottom: 0x9B4A3C },
   10: { name: "Water",       solid: false, topTex: "water.png",        top: 0x3366CC, sideTex: "water.png",      side: 0x3366CC, bottomTex: "water.png",       bottom: 0x3366CC, transparent: true, opacity: 0.6 },
   11: { name: "Leaves",      solid: true,  topTex: "leaves.png",       top: 0x3A7A20, sideTex: "leaves.png",     side: 0x3A7A20, bottomTex: "leaves.png",      bottom: 0x3A7A20, transparent: true, opacity: 0.85 },
