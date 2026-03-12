@@ -262,10 +262,22 @@ function isVisible(x, y, z) {
   return false;
 }
 
-// Block highlight outline
-const highlightGeo = new THREE.BoxGeometry(1.02, 1.02, 1.02);
-const highlightMat = new THREE.MeshBasicMaterial({ color: 0x000000, wireframe: true, transparent: true, opacity: 0.4 });
-const highlightMesh = new THREE.Mesh(highlightGeo, highlightMat);
+// 1. Create the wireframe geometry (BoxGeometry)
+const boxGeo = new THREE.BoxGeometry(1.005, 1.005, 1.005); // Slightly larger to prevent flickering
+
+// 2. Use EdgesGeometry to ONLY get the outer edges (removes diagonals)
+const edges = new THREE.EdgesGeometry(boxGeo);
+
+// 3. Use LineBasicMaterial for the color and thickness
+const highlightMat = new THREE.LineBasicMaterial({ 
+    color: 0x000000, 
+    linewidth: 2, // Slightly thicker
+    transparent: true, 
+    opacity: 0.5 
+});
+
+// 4. Use LineSegments instead of Mesh
+const highlightMesh = new THREE.LineSegments(edges, highlightMat);
 highlightMesh.visible = false;
 scene.add(highlightMesh);
 
