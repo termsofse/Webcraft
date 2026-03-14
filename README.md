@@ -52,7 +52,7 @@ const BLOCKS = {
     top: "#FF0000",            // Color of the top face (hex color)
     side: "#CC0000",           // Color of the side faces
     bottom: "#990000",         // Color of the bottom face
-    // transparent: true,      // Optional: set true for see-through blocks
+    transparent: true,      // Optional: set true for see-through blocks
   },
 };
 ```
