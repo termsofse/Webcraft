@@ -96,9 +96,9 @@ fallback color is used instead, so the game always renders something.
 | ├── script.js           | # Game engine (rendering, physics, input)|
 | ├── README.md           | # This file                              |
 | └── textures/           | # Block texture images                   |
-|     ├── grass_top.png   | # Grass Texture                          |
-|     ├── dirt.png        | # Dirt Texture                           |
-|     └── ...             | # Other Textures                         |
+| ____├── grass_top.png   | # Grass Texture                          |
+| ____├── dirt.png        | # Dirt Texture                           |
+| ____└── ...             | # Other Textures                         |
 
 ## Limitations
 
