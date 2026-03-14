@@ -89,15 +89,15 @@ fallback color is used instead, so the game always renders something.
 
 ## Project Structure
 
-| minecraft-html/ |
-| ├── index.html      # Entry point |
-| ├── style.css       # All styles (HUD, inventory, menus) |
-| ├── script.js       # Game engine (rendering, physics, input) |
-| ├── README.md       # This file |
-| └── textures/       # Block texture images (optional, for future use) |
-|     ├── grass_top.png |
-|     ├── dirt.png |
-|     └── ... |
+| minecraft-html/ | # Main Folder |
+| ├── index.html  |    # Entry point |
+| ├── style.css   |    # All styles (HUD, inventory, menus) |
+| ├── script.js   |    # Game engine (rendering, physics, input) |
+| ├── README.md   |    # This file |
+| └── textures/   |    # Block texture images (optional, for future use) |
+|     ├── grass_top.png | # Grass Texture |
+|     ├── dirt.png | # Dirt Texture |
+|     └── ... | # Other Textures |
 
 ## Limitations
 
