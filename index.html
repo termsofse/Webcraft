@@ -3,26 +3,22 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Webcraft</title>
+  <title>JSCraft</title>
   <link rel="stylesheet" href="style.css">
 </head>
 <body>
   <canvas id="game"></canvas>
 
-  <!-- Crosshair -->
   <div id="crosshair">+</div>
 
-  <!-- Hotbar -->
   <div id="hotbar"></div>
 
-  <!-- Inventory overlay -->
   <div id="inventory-overlay" class="hidden">
     <div id="inventory-panel">
-      <div id="inv-tabs">
-        <button class="inv-tab active" data-tab="survival">Survival</button>
-        <button class="inv-tab" data-tab="creative">Creative</button>
-      </div>
+      <div id="inv-tabs-container"></div>
+      
       <div id="inv-content"></div>
+      
       <div id="inv-hotbar-section">
         <div class="inv-label">Hotbar</div>
         <div id="inv-hotbar-slots"></div>
@@ -30,7 +26,6 @@
     </div>
   </div>
 
-  <!-- Keybind menu -->
   <div id="keybind-overlay" class="hidden">
     <div id="keybind-panel">
       <h2>Keybinds</h2>
@@ -39,7 +34,6 @@
     </div>
   </div>
 
-  <!-- Pause menu -->
   <div id="pause-overlay" class="hidden">
     <div id="pause-panel">
       <h2>Paused</h2>
