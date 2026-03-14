@@ -84,8 +84,7 @@ fallback color is used instead, so the game always renders something.
 
 - Keep block IDs sequential (no gaps)
 - The block will automatically appear in the Creative inventory
-- For special behavior (like water flowing), you'll need to add custom logic
-- Colors with low contrast between top/side look more natural
+- For special behavior, you'll need to add custom logic
 
 ## Project Structure
 
@@ -96,13 +95,13 @@ fallback color is used instead, so the game always renders something.
 | ├── script.js           | # Game engine (rendering, physics, input)|
 | ├── README.md           | # This file                              |
 | └── textures/           | # Block texture images                   |
-| ____├── grass_top.png   | # Grass Texture                          |
-| ____├── dirt.png        | # Dirt Texture                           |
-| ____└── ...             | # Other Textures                         |
+| ‎ ‎ ‎ ‎ ├── grass_top.png   | # Grass Texture                          |
+| ‎ ‎ ‎ ‎ ├── dirt.png        | # Dirt Texture                           |
+| ‎ ‎ ‎ ‎ └── ...             | # Other Textures                         |
 
 ## Limitations
 
-- Fixed world size (32×32×64)
+- Fixed world size (defined in `script.js` file)
 - No multiplayer
 - No save/load (world resets on refresh)
 - Requires a browser with WebGL support (all modern browsers)
