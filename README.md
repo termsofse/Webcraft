@@ -1,11 +1,11 @@
 # Minecraft HTML
 
 A voxel Minecraft clone built with vanilla HTML, CSS, JavaScript, and Three.js.
-No build tools — just open \`index.html\` in your browser.
+No build tools — just open `index.html` in your browser.
 
 ## How to Play
 
-1. Open \`index.html\` in any modern browser
+1. Open `index.html` in any modern browser
 2. Click on the game canvas to lock your mouse
 3. Use the controls below to play!
 
@@ -38,9 +38,9 @@ All keybinds can be rebound by pressing **O** to open the keybind menu.
 
 ## How to Add More Blocks
 
-Adding a new block is simple! Edit the \`BLOCKS\` object in \`script.js\`:
+Adding a new block is simple! Edit the `BLOCKS` object in `script.js`:
 
-\`\`\`javascript
+```javascript
 // In script.js, find the BLOCKS object and add a new entry:
 const BLOCKS = {
   // ... existing blocks ...
@@ -55,29 +55,29 @@ const BLOCKS = {
     // transparent: true,      // Optional: set true for see-through blocks
   },
 };
-\`\`\`
+```
 
 ### Block Properties
 
 | Property      | Type    | Description |
 |---------------|---------|-------------|
-| \`name\`       | string  | Display name shown in debug info |
-| \`solid\`      | boolean | \`true\` = collision enabled, \`false\` = no collision |
-| \`top\`        | string  | Hex color for top face |
-| \`side\`       | string  | Hex color for side faces |
-| \`bottom\`     | string  | Hex color for bottom face |
-| \`transparent\` | boolean | Optional. Makes block semi-transparent |
+| `name`       | string  | Display name shown in debug info |
+| `solid`      | boolean | `true` = collision enabled, `false` = no collision |
+| `top`        | string  | Hex color for top face |
+| `side`       | string  | Hex color for side faces |
+| `bottom`     | string  | Hex color for bottom face |
+| `transparent` | boolean | Optional. Makes block semi-transparent |
 
 ### Replacing Textures
 
-The game already loads and uses the PNG files in \`textures/\`.
+The game already loads and uses the PNG files in `textures/`.
 To swap in your own textures:
 
-1. Replace any \`.png\` in the \`textures/\` folder with your own 16×16 image (same filename).
+1. Replace any `.png` in the `textures/` folder with your own 16×16 image (same filename).
 2. Reload the page — the new texture will appear automatically.
 
-Each block definition in \`BLOCKS\` has a \`topTex\`, \`sideTex\`, and \`bottomTex\` field pointing to
-a filename in \`textures/\`. If a texture file is missing or fails to load, the hex \`top\`/\`side\`/\`bottom\`
+Each block definition in `BLOCKS` has a `topTex`, `sideTex`, and `bottomTex` field pointing to
+a filename in `textures/`. If a texture file is missing or fails to load, the hex `top`/`side`/`bottom`
 fallback color is used instead, so the game always renders something.
 
 ### Tips
