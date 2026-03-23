@@ -329,6 +329,7 @@ document.addEventListener("keydown", e => {
   const action = getAction(e.code);
 
   if (action === "jump") {
+    if (e.repeat) return;
     const now = performance.now();
     if (now - lastSpaceTime < 300) { player.flying = !player.flying; player.vy = 0; }
     lastSpaceTime = now;
