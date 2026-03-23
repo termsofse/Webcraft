@@ -172,7 +172,7 @@ const TEX_FILES = [
 let texturesLoaded = 0;
 TEX_FILES.forEach(name => {
   texLoader.load(
-    "textures/" + name,
+    "textures/block/" + name,
     tex => {
       tex.magFilter = THREE.NearestFilter;
       tex.minFilter = THREE.NearestFilter;
@@ -536,19 +536,22 @@ function drawFace2D(g, pts, texName, fallbackHex, darkFactor) {
 function hexColor(n) { return "#" + n.toString(16).padStart(6,"0"); }
 
 function makeBlockIcon(blockId, size = 32) {
-  const c = document.createElement("canvas");
-  c.width = size; c.height = size;
-  const g = c.getContext("2d");
   const block = BLOCKS[blockId];
-  if (!block || !block.solid) return c;
+  if (!block || blockId === 0) return document.createElement("div");
 
-  const hw = size * 0.5, qh = size * 0.25;
-
-  drawFace2D(g, [hw,0, size,qh, hw,hw, 0,qh], block.topTex, hexColor(block.top), 1.0);
-  drawFace2D(g, [0,qh, hw,hw, hw,size, 0,hw+qh], block.sideTex, hexColor(block.side), 0.75);
-  drawFace2D(g, [hw,hw, size,qh, size,hw+qh, hw,size], block.sideTex, hexColor(block.side), 0.88);
-
-  return c;
+  // Create an image element instead of a canvas
+  const img = new Image();
+  
+  // This assumes your icon names match the block name (e.g., "Grass" -> "grass.png")
+  // Or you can add an 'icon' property to your BLOCKS definition if names differ.
+  const iconName = block.name.toLowerCase().replace(" ", "_") + ".png";
+  
+  img.src = "textures/icons/" + iconName;
+  img.style.width = size + "px";
+  img.style.height = size + "px";
+  img.style.imageRendering = "pixelated"; // Keeps that Minecraft look
+  
+  return img;
 }
 
 // ============================================================
