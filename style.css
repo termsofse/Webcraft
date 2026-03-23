@@ -56,7 +56,20 @@ body {
   border-color: #fff;
   box-shadow: inset 0 0 5px #fff;
 }
+/* This targets the hotbar container inside the inventory panel */
+#inv-hotbar-slots {
+  display: flex;
+  flex-direction: row; /* Forces horizontal alignment */
+  gap: 4px;            /* Adds space between the slots */
+  margin-top: 5px;
+  justify-content: center; /* Centers the slots inside the panel */
+}
 
+/* Ensure the slots inside use the same sizing as your regular hotbar */
+#inv-hotbar-slots .hotbar-slot {
+  width: 40px; 
+  height: 40px;
+}
 /* Inventory Overlay */
 .hidden { display: none !important; }
 
