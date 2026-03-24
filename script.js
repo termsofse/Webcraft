@@ -1123,6 +1123,8 @@ el.appendChild(slot);
 
 }
 
+
+
 function updateInventoryUI() {
 
 const overlay = document.getElementById("inventory-overlay");
@@ -1388,7 +1390,6 @@ hbSlots.appendChild(slot);
 }
 
 }
-
 
 
 
