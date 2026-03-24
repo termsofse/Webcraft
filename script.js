@@ -1100,295 +1100,454 @@ function makeBlockIcon(blockId, size = 32) {
 // ============================================================
 
 function updateHotbarUI() {
-
-const el = document.getElementById("hotbar");
-
-if (!el) return;
-
-el.innerHTML = "";
-
-for (let i = 0; i < 9; i++) {
-
-const slot = document.createElement("div");
-
-slot.className = "hotbar-slot" + (i === selectedSlot ? " active" : "");
-
-if (hotbar[i]) { const icon = makeBlockIcon(hotbar[i].id, 36); icon.className = "block-icon"; slot.appendChild(icon); }
-
-slot.addEventListener("click", () => { selectedSlot = i; updateHotbarUI(); });
-
-el.appendChild(slot);
-
+  const el = document.getElementById("hotbar");
+  if (!el) return;
+  el.innerHTML = "";
+  for (let i = 0; i < 9; i++) {
+    const slot = document.createElement("div");
+    slot.className = "hotbar-slot" + (i === selectedSlot ? " active" : "");
+    slot.style.position = "relative";
+    if (hotbar[i]) {
+      const icon = makeBlockIcon(hotbar[i].id, 36);
+      icon.className = "block-icon";
+      [slot.app](https://slot.app)endChild(icon);
+      if (hotbar[i].count > 1) {
+        const badge = document.createElement("span");
+        badge.style.cssText = "position:absolute;bottom:1px;right:2px;font-size:10px;font-weight:bold;color:white;text-shadow:1px 1px 0 #000;pointer-events:none;";
+        badge.textContent = hotbar[i].count;
+        [slot.app](https://slot.app)endChild(badge);
+      }
+    }
+    slot.addEventListener("click", () => { selectedSlot = i; updateHotbarUI(); });
+    [el.app](https://el.app)endChild(slot);
+  }
 }
 
+// ============================================================
+// INVENTORY STATE
+// ============================================================
+let cursorStack = null; // { id: number, count: number }
+let isDragging = false;
+let dragButton = -1;        // 0 = left drag (distribute), 2 = right drag (place one each)
+let dragStartStack = null;  // snapshot of cursorStack when drag began
+let draggedSlots = [];      // ordered list of slot elements hovered during drag
+
+// ============================================================
+// CURSOR ITEM ELEMENT
+// ============================================================
+const cursorEl = document.createElement("div");
+cursorEl.id = "cursor-item";
+cursorEl.style.cssText = `
+  position: fixed;
+  pointer-events: none;
+  z-index: 9999;
+  display: none;
+  width: 36px;
+  height: 36px;
+  transform: translate(-50%, -50%);
+`;
+[document.body.app](https://document.body.app)endChild(cursorEl);
+
+document.addEventListener("mousemove", e => {
+  if (cursorStack) {
+    cursorEl.style.left = e.clientX + "px";
+    cursorEl.style.top  = e.clientY + "px";
+  }
+});
+
+function updateCursorEl() {
+  if (!cursorStack) {
+    cursorEl.style.display = "none";
+    cursorEl.innerHTML = "";
+    return;
+  }
+  cursorEl.style.display = "block";
+  cursorEl.innerHTML = "";
+  const icon = makeBlockIcon(cursorStack.id, 36);
+  icon.style.width  = "36px";
+  icon.style.height = "36px";
+  [cursorEl.app](https://cursorEl.app)endChild(icon);
+
+  if (cursorStack.count > 1) {
+    const badge = document.createElement("span");
+    badge.style.cssText = `
+      position: absolute;
+      bottom: 1px; right: 2px;
+      font-size: 10px; font-weight: bold;
+      color: white; text-shadow: 1px 1px 0 #000;
+      pointer-events: none;
+    `;
+    badge.textContent = cursorStack.count;
+    [cursorEl.app](https://cursorEl.app)endChild(badge);
+  }
+  cursorEl.style.position = "fixed";
 }
 
+// ============================================================
+// MAX STACK SIZE
+// ============================================================
+function maxStack(id) {
+  const def = BLOCKS[id];
+  return def?.maxStack ?? 64;
+}
 
+// ============================================================
+// SLOT INTERACTION HELPERS
+// ============================================================
+const slotRegistry = new WeakMap();
+
+function attachSlotHandlers(el, slotGetter, slotSetter, isCreativeSource = false) {
+
+  el.addEventListener("mousedown", e => {
+    if (!inventoryOpen) return;
+    e.preventDefault();
+    e.stopPropagation();
+
+    if (e.button === 0 || e.button === 2) {
+      isDragging   = false;
+      dragButton   = e.button;
+      draggedSlots = [];
+      dragStartStack = cursorStack ? { ...cursorStack } : null;
+    }
+  });
+
+  el.addEventListener("mouseenter", e => {
+    if (!inventoryOpen) return;
+    if ((e.buttons & 1) && dragButton === 0 && cursorStack) {
+      if (!draggedSlots.includes(el)) {
+        isDragging = true;
+        draggedSlots.push(el);
+        previewLeftDrag();
+      }
+    } else if ((e.buttons & 2) && dragButton === 2 && cursorStack) {
+      if (!draggedSlots.includes(el)) {
+        isDragging = true;
+        draggedSlots.push(el);
+        applyRightDragStep(el, slotGetter, slotSetter, isCreativeSource);
+      }
+    }
+  });
+
+  el.addEventListener("mouseup", e => {
+    if (!inventoryOpen) return;
+    e.preventDefault();
+    e.stopPropagation();
+
+    if (isDragging && dragButton === 0) {
+      commitLeftDrag();
+      isDragging = false;
+      dragButton = -1;
+      draggedSlots = [];
+      return;
+    }
+    isDragging = false;
+    dragButton = -1;
+    draggedSlots = [];
+
+    if (e.button === 0) handleLeftClick(e, slotGetter, slotSetter, isCreativeSource);
+    if (e.button === 2) handleRightClick(slotGetter, slotSetter, isCreativeSource);
+  });
+}
+
+function handleLeftClick(e, slotGetter, slotSetter, isCreativeSource) {
+  const slotStack = slotGetter();
+
+  if (isCreativeSource) {
+    if (!slotStack) return;
+    const amount = e.shiftKey ? maxStack(slotStack.id) : 1;
+    if (!cursorStack) {
+      cursorStack = { id: slotStack.id, count: amount };
+    } else if (cursorStack.id === slotStack.id) {
+      cursorStack.count = Math.min(cursorStack.count + amount, maxStack(slotStack.id));
+    } else {
+      cursorStack = { id: slotStack.id, count: amount };
+    }
+    updateCursorEl();
+    return;
+  }
+
+  if (!cursorStack && !slotStack) return;
+
+  if (!cursorStack) {
+    cursorStack = { ...slotStack };
+    slotSetter(null);
+  } else if (!slotStack) {
+    slotSetter({ ...cursorStack });
+    cursorStack = null;
+  } else if (cursorStack.id === slotStack.id) {
+    const max   = maxStack(cursorStack.id);
+    const total = cursorStack.count + slotStack.count;
+    if (total <= max) {
+      slotSetter({ id: slotStack.id, count: total });
+      cursorStack = null;
+    } else {
+      slotSetter({ id: slotStack.id, count: max });
+      cursorStack = { id: cursorStack.id, count: total - max };
+    }
+  } else {
+    const tmp = { ...slotStack };
+    slotSetter({ ...cursorStack });
+    cursorStack = tmp;
+  }
+  updateCursorEl();
+}
+
+function handleRightClick(slotGetter, slotSetter, isCreativeSource) {
+  const slotStack = slotGetter();
+
+  if (isCreativeSource) {
+    if (!slotStack) return;
+    if (!cursorStack) {
+      cursorStack = { id: slotStack.id, count: 1 };
+    } else if (cursorStack.id === slotStack.id) {
+      cursorStack.count = Math.min(cursorStack.count + 1, maxStack(slotStack.id));
+    } else {
+      cursorStack = { id: slotStack.id, count: 1 };
+    }
+    updateCursorEl();
+    return;
+  }
+
+  if (!cursorStack) {
+    if (!slotStack) return;
+    const half = Math.ceil(slotStack.count / 2);
+    cursorStack = { id: slotStack.id, count: half };
+    const remaining = slotStack.count - half;
+    slotSetter(remaining > 0 ? { id: slotStack.id, count: remaining } : null);
+    updateCursorEl();
+    return;
+  }
+
+  if (!slotStack) {
+    slotSetter({ id: cursorStack.id, count: 1 });
+    cursorStack.count--;
+    if (cursorStack.count <= 0) cursorStack = null;
+  } else if (slotStack.id === cursorStack.id) {
+    const max = maxStack(cursorStack.id);
+    if (slotStack.count < max) {
+      slotSetter({ id: slotStack.id, count: slotStack.count + 1 });
+      cursorStack.count--;
+      if (cursorStack.count <= 0) cursorStack = null;
+    }
+  } else {
+    const tmp = { ...slotStack };
+    slotSetter({ ...cursorStack });
+    cursorStack = tmp;
+  }
+  updateCursorEl();
+}
+
+function previewLeftDrag() {
+  // Visual preview hook — can tint slots here if desired
+}
+
+function commitLeftDrag() {
+  if (!cursorStack || draggedSlots.length === 0) return;
+
+  const eligible = draggedSlots.filter(el => {
+    const reg = slotRegistry.get(el);
+    if (!reg) return false;
+    const s = reg.getter();
+    return s === null || s.id === cursorStack.id;
+  });
+
+  if (eligible.length === 0) return;
+
+  const perSlot  = Math.floor(cursorStack.count / eligible.length);
+  if (perSlot < 1) return;
+
+  let remaining = cursorStack.count;
+
+  eligible.forEach(el => {
+    const reg = slotRegistry.get(el);
+    if (!reg) return;
+    const s   = reg.getter();
+    const max = maxStack(cursorStack.id);
+    const cur = s ? s.count : 0;
+    const add = Math.min(perSlot, max - cur, remaining);
+    if (add > 0) {
+      reg.setter({ id: cursorStack.id, count: cur + add });
+      remaining -= add;
+    }
+  });
+
+  cursorStack = remaining > 0 ? { id: cursorStack.id, count: remaining } : null;
+  updateCursorEl();
+}
+
+function applyRightDragStep(el, slotGetter, slotSetter, isCreativeSource) {
+  if (!cursorStack) return;
+  const slotStack = slotGetter();
+
+  if (!slotStack) {
+    slotSetter({ id: cursorStack.id, count: 1 });
+    cursorStack.count--;
+    if (cursorStack.count <= 0) cursorStack = null;
+  } else if (slotStack.id === cursorStack.id) {
+    const max = maxStack(cursorStack.id);
+    if (slotStack.count < max) {
+      slotSetter({ id: slotStack.id, count: slotStack.count + 1 });
+      cursorStack.count--;
+      if (cursorStack.count <= 0) cursorStack = null;
+    }
+  }
+  updateCursorEl();
+}
+
+// ============================================================
+// DROP CURSOR ON CLICK OUTSIDE INVENTORY
+// ============================================================
+document.addEventListener("mouseup", e => {
+  if (!inventoryOpen) return;
+  if (isDragging) return;
+  if (!e.target.closest(".inv-slot, .hotbar-slot, #cursor-item")) {
+    cursorStack = null;
+    updateCursorEl();
+  }
+});
+
+function closeCursorOnInventoryClose() {
+  cursorStack = null;
+  updateCursorEl();
+}
 
 function updateInventoryUI() {
-
-const overlay = document.getElementById("inventory-overlay");
-
-if (!overlay) return;
-
-overlay.classList.toggle("hidden", !inventoryOpen);
-
-if (!inventoryOpen) return;
-
-
-
-// 1. Build Tab Icons Dynamically
-
-let tabsContainer = document.getElementById("inv-tabs-container");
-
-if (!tabsContainer) {
-
-tabsContainer = document.createElement("div");
-
-tabsContainer.id = "inv-tabs-container";
-
-tabsContainer.style.display = "flex";
-
-tabsContainer.style.flexWrap = "wrap";
-
-tabsContainer.style.gap = "4px";
-
-tabsContainer.style.marginBottom = "10px";
-
-overlay.insertBefore(tabsContainer, document.getElementById("inv-content"));
-
-}
-
-
-tabsContainer.innerHTML = "";
-
-INVENTORY_TABS.forEach(tabDef => {
-
-const tabEl = document.createElement("div");
-
-tabEl.className = "inv-tab" + (activeInvTab === tabDef.id ? " active" : "");
-
-tabEl.title = tabDef.name;
-
-tabEl.style.cursor = "pointer";
-
-tabEl.style.padding = "2px";
-
-tabEl.style.border = activeInvTab === tabDef.id ? "2px solid white" : "2px solid transparent";
-
-
-
-const iconImg = document.createElement("img");
-
-iconImg.src = `/ui/${tabDef.id}.png`;
-
-iconImg.alt = tabDef.name;
-
-iconImg.style.width = "32px";
-
-iconImg.style.height = "32px";
-
-iconImg.style.display = "block";
-
-
-
-tabEl.appendChild(iconImg);
-
-tabEl.onclick = () => { activeInvTab = tabDef.id; updateInventoryUI(); };
-
-tabsContainer.appendChild(tabEl);
-
-});
-
-
-
-const content = document.getElementById("inv-content");
-
-content.innerHTML = "";
-
-
-
-// 2. Dynamic Top Header Text
-
-if (activeInvTab !== "survival") {
-
-const label = document.createElement("div");
-
-label.className = "inv-label";
-
-label.style.fontWeight = "bold";
-
-label.style.marginBottom = "8px";
-
-const tabData = INVENTORY_TABS.find(t => t.id === activeInvTab);
-
-label.textContent = tabData ? tabData.name : "Inventory";
-
-content.appendChild(label);
-
-}
-
-
-
-// 3. Search Bar Input
-
-if (activeInvTab === "search") {
-
-const searchInput = document.createElement("input");
-
-searchInput.type = "text";
-
-searchInput.placeholder = "Search items...";
-
-searchInput.value = searchQuery;
-
-searchInput.style.width = "100%";
-
-searchInput.style.padding = "6px";
-
-searchInput.style.marginBottom = "10px";
-
-searchInput.style.background = "#222";
-
-searchInput.style.color = "white";
-
-searchInput.style.border = "2px solid #555";
-
-
-searchInput.oninput = (e) => {
-
-searchQuery = e.target.value.toLowerCase();
-
-renderGrid();
-
-};
-
-content.appendChild(searchInput);
-
-setTimeout(() => searchInput.focus(), 10);
-
-}
-
-
-
-// 4. Scrollable Inventory Grid Container
-
-const gridContainer = document.createElement("div");
-
-gridContainer.id = "dynamic-inv-grid";
-
-gridContainer.style.overflowY = "auto";
-
-gridContainer.style.maxHeight = "280px";
-
-gridContainer.style.display = "flex";
-
-gridContainer.style.flexWrap = "wrap";
-
-gridContainer.style.gap = "4px";
-
-gridContainer.style.alignContent = "flex-start";
-
-content.appendChild(gridContainer);
-
-
-
-function renderGrid() {
-
-gridContainer.innerHTML = "";
-
-
-if (activeInvTab === "survival") {
-
-for (let i = 0; i < 27; i++) {
-
-const slot = document.createElement("div");
-
-slot.className = "inv-slot";
-
-slot.style.width = "36px"; slot.style.height = "36px"; slot.style.border = "2px solid #555"; slot.style.background = "#8b8b8b";
-
-
-if (inventory[i]) { const icon = makeBlockIcon(inventory[i].id, 28); icon.className = "block-icon"; slot.appendChild(icon); }
-
-slot.addEventListener("click", () => { const t = hotbar[selectedSlot]; hotbar[selectedSlot] = inventory[i]; inventory[i] = t; updateHotbarUI(); renderGrid(); });
-
-gridContainer.appendChild(slot);
-
-}
-
-} else {
-
-let displayedBlocks = [];
-
-if (activeInvTab === "search") {
-
-displayedBlocks = ALL_BLOCK_IDS.filter(id => BLOCKS[id].name.toLowerCase().includes(searchQuery));
-
-} else {
-
-displayedBlocks = ALL_BLOCK_IDS.filter(id => (BLOCKS[id].tab || "building_blocks") === activeInvTab);
-
-}
-
-
-
-displayedBlocks.forEach(id => {
-
-const slot = document.createElement("div");
-
-slot.className = "inv-slot";
-
-slot.title = BLOCKS[id]?.name;
-
-slot.style.width = "36px"; slot.style.height = "36px"; slot.style.border = "2px solid #555"; slot.style.background = "#8b8b8b";
-
-
-const icon = makeBlockIcon(id, 28);
-
-icon.className = "block-icon";
-
-slot.appendChild(icon);
-
-
-slot.addEventListener("click", () => { hotbar[selectedSlot] = { id, count: 64 }; updateHotbarUI(); });
-
-gridContainer.appendChild(slot);
-
-});
-
-}
-
-}
-
-
-
-renderGrid();
-
-
-
-// 5. Hotbar UI at the bottom
-
-const hbSlots = document.getElementById("inv-hotbar-slots");
-
-if (hbSlots) {
-
-hbSlots.innerHTML = "";
-
-for (let i = 0; i < 9; i++) {
-
-const slot = document.createElement("div"); slot.className = "inv-slot" + (i === selectedSlot ? " active" : "");
-
-if (hotbar[i]) { const icon = makeBlockIcon(hotbar[i].id, 28); icon.className = "block-icon"; slot.appendChild(icon); }
-
-slot.addEventListener("click", () => { selectedSlot = i; updateHotbarUI(); updateInventoryUI(); });
-
-hbSlots.appendChild(slot);
-
-}
-
-}
-
+  const overlay = document.getElementById("inventory-overlay");
+  if (!overlay) return;
+  overlay.classList.toggle("hidden", !inventoryOpen);
+
+  if (!inventoryOpen) {
+    closeCursorOnInventoryClose();
+    return;
+  }
+
+  let tabsContainer = document.getElementById("inv-tabs-container");
+  if (!tabsContainer) {
+    tabsContainer = document.createElement("div");
+    tabsContainer.id = "inv-tabs-container";
+    tabsContainer.style.cssText = "display:flex;flex-wrap:wrap;gap:4px;margin-bottom:10px;";
+    overlay.insertBefore(tabsContainer, document.getElementById("inv-content"));
+  }
+  tabsContainer.innerHTML = "";
+  INVENTORY_TABS.forEach(tabDef => {
+    const tabEl = document.createElement("div");
+    tabEl.className = "inv-tab" + (activeInvTab === tabDef.id ? " active" : "");
+    tabEl.title = tabDef.name;
+    tabEl.style.cssText = `cursor:pointer;padding:2px;border:${activeInvTab === tabDef.id ? "2px solid white" : "2px solid transparent"};`;
+    const iconImg = document.createElement("img");
+    iconImg.src = `/ui/${tabDef.id}.png`;
+    iconImg.alt = tabDef.name;
+    iconImg.style.cssText = "width:32px;height:32px;display:block;";
+    [tabEl.app](https://tabEl.app)endChild(iconImg);
+    tabEl.onclick = () => { activeInvTab = tabDef.id; updateInventoryUI(); };
+    [tabsContainer.app](https://tabsContainer.app)endChild(tabEl);
+  });
+
+  const content = document.getElementById("inv-content");
+  content.innerHTML = "";
+
+  if (activeInvTab !== "survival") {
+    const label = document.createElement("div");
+    label.className = "inv-label";
+    label.style.cssText = "font-weight:bold;margin-bottom:8px;";
+    const tabData = INVENTORY_TABS.find(t => t.id === activeInvTab);
+    label.textContent = tabData ? tabData.name : "Inventory";
+    [content.app](https://content.app)endChild(label);
+  }
+
+  if (activeInvTab === "search") {
+    const searchInput = document.createElement("input");
+    searchInput.type = "text";
+    searchInput.placeholder = "Search items...";
+    searchInput.value = searchQuery;
+    searchInput.style.cssText = "width:100%;padding:6px;margin-bottom:10px;background:#222;color:white;border:2px solid #555;";
+    searchInput.oninput = e => { searchQuery = e.target.value.toLowerCase(); renderGrid(); };
+    [content.app](https://content.app)endChild(searchInput);
+    setTimeout(() => searchInput.focus(), 10);
+  }
+
+  const gridContainer = document.createElement("div");
+  gridContainer.id = "dynamic-inv-grid";
+  gridContainer.style.cssText = "overflow-y:auto;max-height:280px;display:flex;flex-wrap:wrap;gap:4px;align-content:flex-start;";
+  [content.app](https://content.app)endChild(gridContainer);
+  gridContainer.addEventListener("contextmenu", e => e.preventDefault());
+
+  function makeSlotEl(width = 36) {
+    const slot = document.createElement("div");
+    slot.className = "inv-slot";
+    slot.style.cssText = `width:${width}px;height:${width}px;border:2px solid #555;background:#8b8b8b;position:relative;cursor:pointer;user-select:none;`;
+    return slot;
+  }
+
+  function refreshSlotContents(slot, stack) {
+    slot.innerHTML = "";
+    if (stack) {
+      const icon = makeBlockIcon(stack.id, 28);
+      icon.className = "block-icon";
+      [slot.app](https://slot.app)endChild(icon);
+      if (stack.count > 1) {
+        const badge = document.createElement("span");
+        badge.style.cssText = "position:absolute;bottom:1px;right:2px;font-size:10px;font-weight:bold;color:white;text-shadow:1px 1px 0 #000;pointer-events:none;";
+        badge.textContent = stack.count;
+        [slot.app](https://slot.app)endChild(badge);
+      }
+    }
+  }
+
+  function renderGrid() {
+    gridContainer.innerHTML = "";
+
+    if (activeInvTab === "survival") {
+      for (let i = 0; i < 27; i++) {
+        const idx = i;
+        const slot = makeSlotEl(36);
+        const getter = () => inventory[idx];
+        const setter = v => { inventory[idx] = v; refreshSlotContents(slot, inventory[idx]); };
+        refreshSlotContents(slot, inventory[idx]);
+        slotRegistry.set(slot, { getter, setter });
+        attachSlotHandlers(slot, getter, setter, false);
+        [gridContainer.app](https://gridContainer.app)endChild(slot);
+      }
+    } else {
+      let displayedBlocks = [];
+      if (activeInvTab === "search") {
+        displayedBlocks = ALL_BLOCK_IDS.filter(id => BLOCKS[id].name.toLowerCase().includes(searchQuery));
+      } else {
+        displayedBlocks = ALL_BLOCK_IDS.filter(id => (BLOCKS[id].tab || "building_blocks") === activeInvTab);
+      }
+      displayedBlocks.forEach(id => {
+        const slot = makeSlotEl(36);
+        slot.title = BLOCKS[id]?.name;
+        const getter = () => ({ id, count: maxStack(id) });
+        const setter = () => {};
+        const icon = makeBlockIcon(id, 28);
+        icon.className = "block-icon";
+        [slot.app](https://slot.app)endChild(icon);
+        slotRegistry.set(slot, { getter, setter });
+        attachSlotHandlers(slot, getter, setter, true);
+        [gridContainer.app](https://gridContainer.app)endChild(slot);
+      });
+    }
+  }
+
+  renderGrid();
+
+  const hbSlots = document.getElementById("inv-hotbar-slots");
+  if (hbSlots) {
+    hbSlots.innerHTML = "";
+    hbSlots.addEventListener("contextmenu", e => e.preventDefault());
+    for (let i = 0; i < 9; i++) {
+      const idx = i;
+      const slot = makeSlotEl(36);
+      if (idx === selectedSlot) slot.className += " active";
+      const getter = () => hotbar[idx];
+      const setter = v => { hotbar[idx] = v; refreshSlotContents(slot, hotbar[idx]); updateHotbarUI(); };
+      refreshSlotContents(slot, hotbar[idx]);
+      slotRegistry.set(slot, { getter, setter });
+      attachSlotHandlers(slot, getter, setter, false);
+      [hbSlots.app](https://hbSlots.app)endChild(slot);
+    }
+  }
 }
 
 
