@@ -53,17 +53,8 @@ function main() {
 // tab = The creative inventory tab this item belongs to
 
 let BLOCKS = {};
-async function registerBlocks() {
-  try {
-        // 1. Fetch the blocks object {}
-        const blockjson = await fetch('./blocks.json');
-        BLOCKS = await blockjson.json();
-
-    } catch (error) {
-        console.error("Failed to load game data:", error);
-    }
-}
-registerBlocks();
+const blockjson = await fetch('./blocks.json');
+const BLOCKS = await blockjson.json();
 
 const ALL_BLOCK_IDS = Object.keys(BLOCKS).map(Number).filter(id => id !== 0);
 
@@ -310,17 +301,8 @@ const TEX = {};
 
 
 let TEX_FILES = [];
-async function loadTextures() {
-  try {
-        const textureJson = await fetch('./textures.json');
-        TEX_FILES = await textureJson.json();
-
-    } catch (error) {
-        console.error("Failed to load game data:", error);
-    }
-}
-
-loadTextures();
+const textureJson = await fetch('./textures.json');
+TEX_FILES = await textureJson.json();
 
 let texturesLoaded = 0;
 
