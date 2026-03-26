@@ -1,29 +1,15 @@
 {
-
-0: { name: "Air", solid: false },
-
-1: { name: "Grass", solid: true, tab: "natural_blocks", topTex: "grass_top.png", top: 0x5B8C3E, sideTex: "grass_side.png", side: 0x6B9E4A, bottomTex: "dirt.png", bottom: 0x8B6914 },
-
-2: { name: "Dirt", solid: true, tab: "natural_blocks", topTex: "dirt.png", top: 0x8B6914, sideTex: "dirt.png", side: 0x8B6914, bottomTex: "dirt.png", bottom: 0x8B6914 },
-
-3: { name: "Stone", solid: true, tab: "building_blocks", topTex: "stone.png", top: 0x7F7F7F, sideTex: "stone.png", side: 0x7F7F7F, bottomTex: "stone.png", bottom: 0x7F7F7F },
-
-4: { name: "Cobblestone", solid: true, tab: "building_blocks", topTex: "cobblestone.png", top: 0x6B6B6B, sideTex: "cobblestone.png",side: 0x6B6B6B, bottomTex: "cobblestone.png", bottom: 0x6B6B6B },
-
-5: { name: "Oak Log", solid: true, tab: "building_blocks", topTex: "oak_log_top.png", top: 0xA08050, sideTex: "oak_log_side.png",side: 0x6B5234, bottomTex: "oak_log_top.png", bottom: 0xA08050 },
-
-6: { name: "Oak Planks", solid: true, tab: "building_blocks", topTex: "oak_planks.png", top: 0xBC9862, sideTex: "oak_planks.png", side: 0xBC9862, bottomTex: "oak_planks.png", bottom: 0xBC9862 },
-
-7: { name: "Sand", solid: true, tab: "natural_blocks", topTex: "sand.png", top: 0xDBD3A0, sideTex: "sand.png", side: 0xDBD3A0, bottomTex: "sand.png", bottom: 0xDBD3A0 },
-
-8: { name: "Glass", solid: true, tab: "colored_blocks", topTex: "glass.png", top: 0xC0E8FF, sideTex: "glass.png", side: 0xC0E8FF, bottomTex: "glass.png", bottom: 0xC0E8FF, transparent: true},
-
-9: { name: "Brick", solid: true, tab: "building_blocks", topTex: "brick.png", top: 0x9B4A3C, sideTex: "brick.png", side: 0x9B4A3C, bottomTex: "brick.png", bottom: 0x9B4A3C },
-
-10: { name: "Water", solid: false, tab: "natural_blocks", topTex: "water.png", top: 0x3366CC, sideTex: "water.png", side: 0x3366CC, bottomTex: "water.png", bottom: 0x3366CC, transparent: true, opacity: 0.6 },
-
-11: { name: "Leaves", solid: true, tab: "natural_blocks", topTex: "leaves.png", top: 0x3A7A20, sideTex: "leaves.png", side: 0x3A7A20, bottomTex: "leaves.png", bottom: 0x3A7A20, transparent: true, opacity: 0.85 },
-
-12: { name: "Bedrock", solid: true, tab: "natural_blocks", topTex: "bedrock.png", top: 0x3A3A3A, sideTex: "bedrock.png", side: 0x3A3A3A, bottomTex: "bedrock.png", bottom: 0x3A3A3A },
-
+  "0": { "name": "Air", "solid": false },
+  "1": { "name": "Grass", "solid": true, "tab": "natural_blocks", "topTex": "grass_top.png", "top": "0x5B8C3E", "sideTex": "grass_side.png", "side": "0x6B9E4A", "bottomTex": "dirt.png", "bottom": "0x8B6914" },
+  "2": { "name": "Dirt", "solid": true, "tab": "natural_blocks", "topTex": "dirt.png", "top": "0x8B6914", "sideTex": "dirt.png", "side": "0x8B6914", "bottomTex": "dirt.png", "bottom": "0x8B6914" },
+  "3": { "name": "Stone", "solid": true, "tab": "building_blocks", "topTex": "stone.png", "top": "0x7F7F7F", "sideTex": "stone.png", "side": "0x7F7F7F", "bottomTex": "stone.png", "bottom": "0x7F7F7F" },
+  "4": { "name": "Cobblestone", "solid": true, "tab": "building_blocks", "topTex": "cobblestone.png", "top": "0x6B6B6B", "sideTex": "cobblestone.png", "side": "0x6B6B6B", "bottomTex": "cobblestone.png", "bottom": "0x6B6B6B" },
+  "5": { "name": "Oak Log", "solid": true, "tab": "building_blocks", "topTex": "oak_log_top.png", "top": "0xA08050", "sideTex": "oak_log_side.png", "side": "0x6B5234", "bottomTex": "oak_log_top.png", "bottom": "0xA08050" },
+  "6": { "name": "Oak Planks", "solid": true, "tab": "building_blocks", "topTex": "oak_planks.png", "top": "0xBC9862", "sideTex": "oak_planks.png", "side": "0xBC9862", "bottomTex": "oak_planks.png", "bottom": "0xBC9862" },
+  "7": { "name": "Sand", "solid": true, "tab": "natural_blocks", "topTex": "sand.png", "top": "0xDBD3A0", "sideTex": "sand.png", "side": "0xDBD3A0", "bottomTex": "sand.png", "bottom": "0xDBD3A0" },
+  "8": { "name": "Glass", "solid": true, "tab": "colored_blocks", "topTex": "glass.png", "top": "0xC0E8FF", "sideTex": "glass.png", "side": "0xC0E8FF", "bottomTex": "glass.png", "bottom": "0xC0E8FF", "transparent": true },
+  "9": { "name": "Brick", "solid": true, "tab": "building_blocks", "topTex": "brick.png", "top": "0x9B4A3C", "sideTex": "brick.png", "side": "0x9B4A3C", "bottomTex": "brick.png", "bottom": "0x9B4A3C" },
+  "10": { "name": "Water", "solid": false, "tab": "natural_blocks", "topTex": "water.png", "top": "0x3366CC", "sideTex": "water.png", "side": "0x3366CC", "bottomTex": "water.png", "bottom": "0x3366CC", "transparent": true, "opacity": 0.6 },
+  "11": { "name": "Leaves", "solid": true, "tab": "natural_blocks", "topTex": "leaves.png", "top": "0x3A7A20", "sideTex": "leaves.png", "side": "0x3A7A20", "bottomTex": "leaves.png", "bottom": "0x3A7A20", "transparent": true, "opacity": 0.85 },
+  "12": { "name": "Bedrock", "solid": true, "tab": "natural_blocks", "topTex": "bedrock.png", "top": "0x3A3A3A", "sideTex": "bedrock.png", "side": "0x3A3A3A", "bottomTex": "bedrock.png", "bottom": "0x3A3A3A" }
 }
