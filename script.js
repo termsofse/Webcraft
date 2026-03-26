@@ -56,7 +56,7 @@ let BLOCKS = {};
 async function registerBlocks() {
   try {
         // 1. Fetch the blocks object {}
-        const blockjson = await fetch('./data/blocks.json');
+        const blockjson = await fetch('./blocks.json');
         BLOCKS = await blockjson.json();
 
     } catch (error) {
@@ -312,7 +312,7 @@ const TEX = {};
 let TEX_FILES = [];
 async function loadTextures() {
   try {
-        const textureJson = await fetch('./data/textures.json');
+        const textureJson = await fetch('./textures.json');
         TEX_FILES = await textureJson.json();
 
     } catch (error) {
