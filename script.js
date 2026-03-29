@@ -413,7 +413,7 @@ function main() {
         yaw: 0,
         pitch: 0,
         vy: 0,
-        onGround: true,
+        onGround: false,
         flying: false,
         width: 0.6,
         height: 1.8,
