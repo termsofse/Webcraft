@@ -879,12 +879,29 @@ function main() {
                         icon.className = "block-icon";
                         slot.appendChild(icon);
                     }
-                    slot.addEventListener("click", () => {
-                        const t = hotbar[selectedSlot];
-                        hotbar[selectedSlot] = inventory[i];
-                        inventory[i] = t;
-                        updateHotbarUI();
-                        renderGrid();
+                    slot.addEventListener("mousedown", (e) => {
+                        const slotItem = inventory[i];
+                    
+                        if (e.button === 0) { // Left Click
+                            if (!cursorItem && slotItem) {
+                                // Pick up the whole stack
+                                cursorItem = slotItem;
+                                inventory[i] = null;
+                            } else if (cursorItem && !slotItem) {
+                                // Drop the whole stack
+                                inventory[i] = cursorItem;
+                                cursorItem = null;
+                            } else if (cursorItem && slotItem) {
+                                // Swap them
+                                const temp = inventory[i];
+                                inventory[i] = cursorItem;
+                                cursorItem = temp;
+                            }
+                        } else if (e.button === 2) { // Right Click
+                            // Add "Pick up half" or "Drop one" logic here!
+                        }
+                    
+                        updateInventoryUI(); // Redraw to show changes
                     });
                     gridContainer.appendChild(slot);
                 }
