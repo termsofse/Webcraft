@@ -719,7 +719,7 @@ function main() {
         player.x = Math.max(hw, Math.min(WORLD_SIZE - hw, player.x));
         player.z = Math.max(hw, Math.min(WORLD_SIZE - hw, player.z));
         if (player.y < 1) {
-            player.y = PLATFORM_Y + 2.6;
+            player.y = PLATFORM_Y + 20;
             player.vy = 0;
         }
     }
