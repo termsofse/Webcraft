@@ -882,26 +882,47 @@ function main() {
                     slot.addEventListener("mousedown", (e) => {
                         const slotItem = inventory[i];
                     
-                        if (e.button === 0) { // Left Click
+                        // Left Click: The "Minecraft" Handshake
+                        if (e.button === 0) { 
                             if (!cursorItem && slotItem) {
-                                // Pick up the whole stack
+                                // 1. Pick up item: Cursor was empty, slot had item
                                 cursorItem = slotItem;
                                 inventory[i] = null;
                             } else if (cursorItem && !slotItem) {
-                                // Drop the whole stack
+                                // 2. Place item: Cursor had item, slot was empty
                                 inventory[i] = cursorItem;
                                 cursorItem = null;
                             } else if (cursorItem && slotItem) {
-                                // Swap them
+                                // 3. Swap: Both have items, just trade them
                                 const temp = inventory[i];
                                 inventory[i] = cursorItem;
                                 cursorItem = temp;
                             }
-                        } else if (e.button === 2) { // Right Click
-                            // Add "Pick up half" or "Drop one" logic here!
+                        } 
+                        
+                        // Right Click: The "Split/Drop One" Logic
+                        else if (e.button === 2) {
+                            if (!cursorItem && slotItem) {
+                                // Pick up half the stack
+                                const half = Math.ceil(slotItem.count / 2);
+                                cursorItem = { id: slotItem.id, count: half };
+                                slotItem.count -= half;
+                                if (slotItem.count <= 0) inventory[i] = null;
+                            } else if (cursorItem && (!slotItem || slotItem.id === cursorItem.id)) {
+                                // Drop exactly one item into the slot
+                                if (!inventory[i]) {
+                                    inventory[i] = { id: cursorItem.id, count: 1 };
+                                } else {
+                                    inventory[i].count++;
+                                }
+                                cursorItem.count--;
+                                if (cursorItem.count <= 0) cursorItem = null;
+                            }
                         }
                     
-                        updateInventoryUI(); // Redraw to show changes
+                        updateInventoryUI(); // Refresh the screen
+                        updateHotbarUI();
+                        renderGrid();
                     });
                     gridContainer.appendChild(slot);
                 }
