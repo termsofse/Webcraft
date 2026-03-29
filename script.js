@@ -745,48 +745,8 @@ function main() {
             `Block: ${hotbar[selectedSlot]?.id ? BLOCKS[hotbar[selectedSlot].id].name : "Empty"}`;
     }
     // ============================================================
-    // BLOCK ICON HELPER
+    // BLOCK ICON RENDERER
     // ============================================================
-    const IMG_CACHE = {};
-
-    function getImg(texName) {
-        if (IMG_CACHE[texName]) return IMG_CACHE[texName];
-        const img = new Image();
-        img.src = "textures/" + texName;
-        IMG_CACHE[texName] = img;
-        return img;
-    }
-
-    function drawFace2D(g, pts, texName, fallbackHex, darkFactor) {
-        g.save();
-        g.beginPath();
-        g.moveTo(pts[0], pts[1]);
-        for (let i = 2; i < pts.length; i += 2) g.lineTo(pts[i], pts[i + 1]);
-        g.closePath();
-        g.clip();
-        const img = texName ? getImg(texName) : null;
-        if (img && img.complete && img.naturalWidth > 0) {
-            g.drawImage(img, 0, 0, pts[0] * 2, pts[0] * 2);
-            if (darkFactor < 1) {
-                g.fillStyle = `rgba(0,0,0,${1-darkFactor})`;
-                g.fill();
-            }
-        } else {
-            g.fillStyle = fallbackHex;
-            if (darkFactor < 1) {
-                const r = parseInt(fallbackHex.slice(1, 3), 16),
-                    gr = parseInt(fallbackHex.slice(3, 5), 16),
-                    b = parseInt(fallbackHex.slice(5, 7), 16);
-                g.fillStyle = `rgb(${Math.floor(r*darkFactor)},${Math.floor(gr*darkFactor)},${Math.floor(b*darkFactor)})`;
-            }
-            g.fill();
-        }
-        g.restore();
-    }
-
-    function hexColor(n) {
-        return "#" + n.toString(16).padStart(6, "0");
-    }
 
     function makeBlockIcon(blockId, size = 32) {
         const block = BLOCKS[blockId];
