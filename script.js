@@ -1,8 +1,6 @@
 /*
 
-* Minecraft HTML - Voxel Minecraft clone using Three.js
-
-* Features: true 3D voxel world, block place/break, inventory, flying, rebindable keys
+* Minecraft HTML
 
 */
 // ============================================================
@@ -415,7 +413,7 @@ function main() {
         yaw: 0,
         pitch: 0,
         vy: 0,
-        onGround: false,
+        onGround: true,
         flying: false,
         width: 0.6,
         height: 1.8,
@@ -565,7 +563,7 @@ function main() {
         const hit = castRay();
         if (!hit) return;
         if (e.button === 0) {
-            if (getBlock(hit.x, hit.y, hit.z) !== 12) {
+            if (getBlock(hit.x, hit.y, hit.z) !== 0) {
                 setBlock(hit.x, hit.y, hit.z, 0);
             }
         } else if (e.button === 2) {
@@ -693,12 +691,14 @@ function main() {
             mx /= len;
             mz /= len;
         }
+        const TERM_VEL = -50;
         if (player.flying) {
             player.vy = 0;
             if (keys[keybinds.jump]) player.vy = player.flySpeed;
             if (keys[keybinds.sneak]) player.vy = -player.flySpeed;
         } else {
             player.vy -= GRAVITY * dt;
+            player.vy = Math.max(player.vy, TERMINAL_VELOCITY);
             if (player.onGround && keys[keybinds.jump]) {
                 player.vy = player.jumpForce;
                 player.onGround = false;
