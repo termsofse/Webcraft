@@ -883,6 +883,7 @@ function main() {
                         const t = hotbar[selectedSlot];       // Save what's currently in your hand
                         hotbar[selectedSlot] = inventory[i];  // Put the inventory item in your hand
                         inventory[i] = t;                     // Put what was in your hand into the inventory
+                        updateInventoryUI();
                         updateHotbarUI();                     // Refresh the bottom bar
                         renderGrid();                         // Refresh the inventory grid
                     });
