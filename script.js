@@ -691,14 +691,13 @@ function main() {
             mx /= len;
             mz /= len;
         }
-        const TERM_VEL = -50;
+        
         if (player.flying) {
             player.vy = 0;
             if (keys[keybinds.jump]) player.vy = player.flySpeed;
             if (keys[keybinds.sneak]) player.vy = -player.flySpeed;
         } else {
             player.vy -= GRAVITY * dt;
-            player.vy = Math.max(player.vy, TERMINAL_VELOCITY);
             if (player.onGround && keys[keybinds.jump]) {
                 player.vy = player.jumpForce;
                 player.onGround = false;
