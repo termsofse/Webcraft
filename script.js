@@ -166,7 +166,6 @@ function main() {
             bottom: 0x3A3A3A
         },
     };
-    let cursorItem = null;
     const ALL_BLOCK_IDS = Object.keys(BLOCKS).map(Number).filter(id => id !== 0);
     // ============================================================
     // WORLD CONFIG
@@ -880,50 +879,12 @@ function main() {
                         icon.className = "block-icon";
                         slot.appendChild(icon);
                     }
-                    slot.addEventListener("mousedown", (e) => {
-                        const slotItem = inventory[i];
-                    
-                        // Left Click: The "Minecraft" Handshake
-                        if (e.button === 0) { 
-                            if (!cursorItem && slotItem) {
-                                // 1. Pick up item: Cursor was empty, slot had item
-                                cursorItem = slotItem;
-                                inventory[i] = null;
-                            } else if (cursorItem && !slotItem) {
-                                // 2. Place item: Cursor had item, slot was empty
-                                inventory[i] = cursorItem;
-                                cursorItem = null;
-                            } else if (cursorItem && slotItem) {
-                                // 3. Swap: Both have items, just trade them
-                                const temp = inventory[i];
-                                inventory[i] = cursorItem;
-                                cursorItem = temp;
-                            }
-                        } 
-                        
-                        // Right Click: The "Split/Drop One" Logic
-                        else if (e.button === 2) {
-                            if (!cursorItem && slotItem) {
-                                // Pick up half the stack
-                                const half = Math.ceil(slotItem.count / 2);
-                                cursorItem = { id: slotItem.id, count: half };
-                                slotItem.count -= half;
-                                if (slotItem.count <= 0) inventory[i] = null;
-                            } else if (cursorItem && (!slotItem || slotItem.id === cursorItem.id)) {
-                                // Drop exactly one item into the slot
-                                if (!inventory[i]) {
-                                    inventory[i] = { id: cursorItem.id, count: 1 };
-                                } else {
-                                    inventory[i].count++;
-                                }
-                                cursorItem.count--;
-                                if (cursorItem.count <= 0) cursorItem = null;
-                            }
-                        }
-                    
-                        updateInventoryUI(); // Refresh the screen
-                        updateHotbarUI();
-                        renderGrid();
+                    slot.addEventListener("click", () => {
+                        const t = hotbar[selectedSlot];       // Save what's currently in your hand
+                        hotbar[selectedSlot] = inventory[i];  // Put the inventory item in your hand
+                        inventory[i] = t;                     // Put what was in your hand into the inventory
+                        updateHotbarUI();                     // Refresh the bottom bar
+                        renderGrid();                         // Refresh the inventory grid
                     });
                     gridContainer.appendChild(slot);
                 }
@@ -971,27 +932,6 @@ function main() {
                 }
                 hbSlots.appendChild(slot);
             }
-        }
-        // At the very end of updateInventoryUI()
-        const cursorEl = document.getElementById("cursor-item") || document.createElement("div");
-        cursorEl.id = "cursor-item";
-        cursorEl.style.position = "fixed";
-        cursorEl.style.pointerEvents = "none"; // So it doesn't block your clicks
-        cursorEl.style.zIndex = "2000";
-        document.body.appendChild(cursorEl);
-        
-        if (cursorItem) {
-            cursorEl.innerHTML = "";
-            const icon = makeBlockIcon(cursorItem.id, 32);
-            cursorEl.appendChild(icon);
-            
-            // Move the icon with the mouse
-            document.onmousemove = (e) => {
-                cursorEl.style.left = (e.clientX - 16) + "px";
-                cursorEl.style.top = (e.clientY - 16) + "px";
-            };
-        } else {
-            cursorEl.innerHTML = "";
         }
     }
     // ============================================================
