@@ -968,13 +968,29 @@ function main() {
                     icon.className = "block-icon";
                     slot.appendChild(icon);
                 }
-                slot.addEventListener("click", () => {
-                    selectedSlot = i;
-                    updateHotbarUI();
-                    updateInventoryUI();
-                });
                 hbSlots.appendChild(slot);
             }
+        }
+        // At the very end of updateInventoryUI()
+        const cursorEl = document.getElementById("cursor-item") || document.createElement("div");
+        cursorEl.id = "cursor-item";
+        cursorEl.style.position = "fixed";
+        cursorEl.style.pointerEvents = "none"; // So it doesn't block your clicks
+        cursorEl.style.zIndex = "2000";
+        document.body.appendChild(cursorEl);
+        
+        if (cursorItem) {
+            cursorEl.innerHTML = "";
+            const icon = makeBlockIcon(cursorItem.id, 32);
+            cursorEl.appendChild(icon);
+            
+            // Move the icon with the mouse
+            document.onmousemove = (e) => {
+                cursorEl.style.left = (e.clientX - 16) + "px";
+                cursorEl.style.top = (e.clientY - 16) + "px";
+            };
+        } else {
+            cursorEl.innerHTML = "";
         }
     }
     // ============================================================
