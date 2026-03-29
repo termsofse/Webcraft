@@ -166,6 +166,7 @@ function main() {
             bottom: 0x3A3A3A
         },
     };
+    let cursorItem = null;
     const ALL_BLOCK_IDS = Object.keys(BLOCKS).map(Number).filter(id => id !== 0);
     // ============================================================
     // WORLD CONFIG
