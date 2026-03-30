@@ -872,7 +872,7 @@ function main() {
 					slot.className = "inv-slot";
 					slot.style.width = "36px"; slot.style.height = "36px"; slot.style.border = "2px solid #555"; slot.style.background = "#8b8b8b";
 					if (inventory[i]) { const icon = makeBlockIcon(inventory[i].id, 28); icon.className = "block-icon"; slot.appendChild(icon); }
-					slot.addEventListener("click", () => { const t = hotbar[selectedSlot]; hotbar[selectedSlot] = inventory[i]; inventory[i] = t; updateHotbarUI(); renderGrid(); });
+					slot.addEventListener("click", () => { const t = hotbar[selectedSlot]; hotbar[selectedSlot] = inventory[i]; inventory[i] = t; updateHotbarUI(); updateInventoryUI(); renderGrid(); });
 					gridContainer.appendChild(slot);
 				}
 			} else {
@@ -905,8 +905,15 @@ function main() {
 			hbSlots.innerHTML = "";
 			for (let i = 0; i < 9; i++) {
 				const slot = document.createElement("div"); slot.className = "inv-slot" + (i === selectedSlot ? " active" : "");
-				if (hotbar[i]) { const icon = makeBlockIcon(hotbar[i].id, 28); icon.className = "block-icon"; slot.appendChild(icon); }
-				slot.addEventListener("click", () => { selectedSlot = i; updateHotbarUI(); updateInventoryUI(); });
+				if (hotbar[i]) { 
+					const icon = makeBlockIcon(hotbar[i].id, 28);
+					icon.className = "block-icon"; slot.appendChild(icon); 
+				}
+				slot.addEventListener("click", () => { 
+					selectedSlot = i; 
+					updateHotbarUI(); 
+					updateInventoryUI(); 
+				});
 				hbSlots.appendChild(slot);
 			}
 		}
