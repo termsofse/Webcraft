@@ -987,6 +987,7 @@ function main() {
             // Game Tick
             while (tickAccumulator >= TICK_RATE) {
                 // Non render-based things
+				console.log("Game Tick")
                 tickAccumulator -= TICK_RATE; 
             }
         }
