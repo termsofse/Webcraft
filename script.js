@@ -766,217 +766,152 @@ function main() {
     // ============================================================
     // INVENTORY UI (NEW TAB SYSTEM)
     // ============================================================
-    // Cursor Slot
-    const cursor = document.createElement("div");
-    cursor.className = "curs-slot";
-    cursor.style.width = "36px";
-    cursor.style.position = "fixed";
-    cursor.style.pointerEvents = "none";
-    cursor.style.zIndex = "9999";
-    document.body.appendChild(cursor);
-    cursor.style.height = "36px";
-    const cursicon = makeBlockIcon(inventory[i].id, 28);
-    cursicon.className = "block-icon";
-    cursor.appendChild(cursicon);
 
-    function updateCursorIconPos(e) {
-        if (inventoryOpen) {
-            cursor.style.display = "block";
-            cursor.style.left = (e.clientX - 20) + "px";
-            cursor.style.top = (e.clientY - 20) + "px";
-        } else {
-            cursor.style.display = "none";
-            cursor..style.innerHTML = "";
-        }
-    }
-
-    window.addEventListener("mousemove", updateCursorIconPos);
-    
     function updateHotbarUI() {
-        const el = document.getElementById("hotbar");
-        if (!el) return;
-        el.innerHTML = "";
-        for (let i = 0; i < 9; i++) {
-            const slot = document.createElement("div");
-            slot.className = "hotbar-slot" + (i === selectedSlot ? " active" : "");
-            if (hotbar[i]) {
-                const icon = makeBlockIcon(hotbar[i].id, 36);
-                icon.className = "block-icon";
-                slot.appendChild(icon);
-            }
-            slot.addEventListener("click", () => {
-                t = hotbar[selectedSlot];       // Save what's currently in your hand
-                hotbar[selectedSlot] = cursor;  // Put the inventory item in your hand
-                cursor = t;                     // Put what was in your hand into the inventory
-                updateInventoryUI();
-                updateHotbarUI();                     // Refresh the bottom bar
-                renderGrid();                         // Refresh the inventory grid
-            });
-            el.appendChild(slot);
-        }
-    }
+		const el = document.getElementById("hotbar");
+		if (!el) return;
+		el.innerHTML = "";
+		for (let i = 0; i < 9; i++) {
+			const slot = document.createElement("div");
+			slot.className = "hotbar-slot" + (i === selectedSlot ? " active" : "");
+			if (hotbar[i]) { const icon = makeBlockIcon(hotbar[i].id, 36); icon.className = "block-icon"; slot.appendChild(icon); }
+			slot.addEventListener("click", () => { selectedSlot = i; updateHotbarUI(); });
+			el.appendChild(slot);
+		}
+	}
 
     function updateInventoryUI() {
-        const overlay = document.getElementById("inventory-overlay");
-        if (!overlay) return;
-        overlay.classList.toggle("hidden", !inventoryOpen);
-        if (!inventoryOpen) return;
-        // 1. Build Tab Icons Dynamically
-        let tabsContainer = document.getElementById("inv-tabs-container");
-        if (!tabsContainer) {
-            tabsContainer = document.createElement("div");
-            tabsContainer.id = "inv-tabs-container";
-            tabsContainer.style.display = "flex";
-            tabsContainer.style.flexWrap = "wrap";
-            tabsContainer.style.gap = "4px";
-            tabsContainer.style.marginBottom = "10px";
-            overlay.insertBefore(tabsContainer, document.getElementById("inv-content"));
-        }
-        tabsContainer.innerHTML = "";
-        INVENTORY_TABS.forEach(tabDef => {
-            const tabEl = document.createElement("div");
-            tabEl.className = "inv-tab" + (activeInvTab === tabDef.id ? " active" : "");
-            tabEl.title = tabDef.name;
-            tabEl.style.cursor = "pointer";
-            tabEl.style.padding = "2px";
-            tabEl.style.border = activeInvTab === tabDef.id ? "2px solid white" : "2px solid transparent";
-            const iconImg = document.createElement("img");
-            iconImg.src = `/ui/${tabDef.id}.png`;
-            iconImg.alt = tabDef.name;
-            iconImg.style.width = "32px";
-            iconImg.style.height = "32px";
-            iconImg.style.display = "block";
-            tabEl.appendChild(iconImg);
-            tabEl.onclick = () => {
-                activeInvTab = tabDef.id;
-                updateInventoryUI();
-            };
-            tabsContainer.appendChild(tabEl);
-        });
-        const content = document.getElementById("inv-content");
-        content.innerHTML = "";
-        // 2. Dynamic Top Header Text
-        if (activeInvTab !== "survival") {
-            const label = document.createElement("div");
-            label.className = "inv-label";
-            label.style.fontWeight = "bold";
-            label.style.marginBottom = "8px";
-            const tabData = INVENTORY_TABS.find(t => t.id === activeInvTab);
-            label.textContent = tabData ? tabData.name : "Inventory";
-            content.appendChild(label);
-        }
-        // 3. Search Bar Input
-        if (activeInvTab === "search") {
-            const searchInput = document.createElement("input");
-            searchInput.type = "text";
-            searchInput.placeholder = "Search items...";
-            searchInput.value = searchQuery;
-            searchInput.style.width = "100%";
-            searchInput.style.padding = "6px";
-            searchInput.style.marginBottom = "10px";
-            searchInput.style.background = "#222";
-            searchInput.style.color = "white";
-            searchInput.style.border = "2px solid #555";
-            searchInput.oninput = (e) => {
-                searchQuery = e.target.value.toLowerCase();
-                renderGrid();
-            };
-            content.appendChild(searchInput);
-            setTimeout(() => searchInput.focus(), 10);
-        }
-        // 4. Scrollable Inventory Grid Container
-        const gridContainer = document.createElement("div");
-        gridContainer.id = "dynamic-inv-grid";
-        gridContainer.style.overflowY = "auto";
-        gridContainer.style.maxHeight = "280px";
-        gridContainer.style.display = "flex";
-        gridContainer.style.flexWrap = "wrap";
-        gridContainer.style.gap = "4px";
-        gridContainer.style.alignContent = "flex-start";
-        content.appendChild(gridContainer);
+		const overlay = document.getElementById("inventory-overlay");
+		if (!overlay) return;
+		overlay.classList.toggle("hidden", !inventoryOpen);
+		if (!inventoryOpen) return;
+	
+		// 1. Build Tab Icons Dynamically
+		let tabsContainer = document.getElementById("inv-tabs-container");
+		if (!tabsContainer) {
+			tabsContainer = document.createElement("div");
+			tabsContainer.id = "inv-tabs-container";
+			tabsContainer.style.display = "flex";
+			tabsContainer.style.flexWrap = "wrap";
+			tabsContainer.style.gap = "4px";
+			tabsContainer.style.marginBottom = "10px";
+			overlay.insertBefore(tabsContainer, document.getElementById("inv-content"));
+		}
+	
+		tabsContainer.innerHTML = "";
+		INVENTORY_TABS.forEach(tabDef => {
+			const tabEl = document.createElement("div");
+			tabEl.className = "inv-tab" + (activeInvTab === tabDef.id ? " active" : "");
+			tabEl.title = tabDef.name;
+			tabEl.style.cursor = "pointer";
+			tabEl.style.padding = "2px";
+			tabEl.style.border = activeInvTab === tabDef.id ? "2px solid white" : "2px solid transparent";
+	
+			const iconImg = document.createElement("img");
+			iconImg.src = `/ui/${tabDef.id}.png`;
+			iconImg.alt = tabDef.name;
+			iconImg.style.width = "32px";
+			iconImg.style.height = "32px";
+			iconImg.style.display = "block";
+	
+			tabEl.appendChild(iconImg);
+			tabEl.onclick = () => { activeInvTab = tabDef.id; updateInventoryUI(); };
+			tabsContainer.appendChild(tabEl);
+		});
+	
+		const content = document.getElementById("inv-content");
+		content.innerHTML = "";
+	
+		// 2. Dynamic Top Header Text
+		if (activeInvTab !== "survival") {
+			const label = document.createElement("div");
+			label.className = "inv-label";
+			label.style.fontWeight = "bold";
+			label.style.marginBottom = "8px";
+			const tabData = INVENTORY_TABS.find(t => t.id === activeInvTab);
+			label.textContent = tabData ? tabData.name : "Inventory";
+			content.appendChild(label);
+		}
+	
+		// 3. Search Bar Input
+		if (activeInvTab === "search") {
+			const searchInput = document.createElement("input");
+			searchInput.type = "text";
+			searchInput.placeholder = "Search items...";
+			searchInput.value = searchQuery;
+			searchInput.style.width = "100%";
+			searchInput.style.padding = "6px";
+			searchInput.style.marginBottom = "10px";
+			searchInput.style.background = "#222";
+			searchInput.style.color = "white";
+			searchInput.style.border = "2px solid #555";
+			searchInput.oninput = (e) => {
+				searchQuery = e.target.value.toLowerCase();
+				renderGrid();
+			};
+			content.appendChild(searchInput);
+			setTimeout(() => searchInput.focus(), 10);
+		}
+	
+		// 4. Scrollable Inventory Grid Container
+		const gridContainer = document.createElement("div");
+		gridContainer.id = "dynamic-inv-grid";
+		gridContainer.style.overflowY = "auto";
+		gridContainer.style.maxHeight = "280px";
+		gridContainer.style.display = "flex";
+		gridContainer.style.flexWrap = "wrap";
+		gridContainer.style.gap = "4px";
+		gridContainer.style.alignContent = "flex-start";
+		content.appendChild(gridContainer);
+	
+		function renderGrid() {
+			gridContainer.innerHTML = "";
+			if (activeInvTab === "survival") {
+				for (let i = 0; i < 27; i++) {
+					const slot = document.createElement("div");
+					slot.className = "inv-slot";
+					slot.style.width = "36px"; slot.style.height = "36px"; slot.style.border = "2px solid #555"; slot.style.background = "#8b8b8b";
+					if (inventory[i]) { const icon = makeBlockIcon(inventory[i].id, 28); icon.className = "block-icon"; slot.appendChild(icon); }
+					slot.addEventListener("click", () => { const t = hotbar[selectedSlot]; hotbar[selectedSlot] = inventory[i]; inventory[i] = t; updateHotbarUI(); renderGrid(); });
+					gridContainer.appendChild(slot);
+				}
+			} else {
+				let displayedBlocks = [];
+				if (activeInvTab === "search") {
+					displayedBlocks = ALL_BLOCK_IDS.filter(id => BLOCKS[id].name.toLowerCase().includes(searchQuery));
+				} else {
+					displayedBlocks = ALL_BLOCK_IDS.filter(id => (BLOCKS[id].tab || "building_blocks") === activeInvTab);
+				}
+				displayedBlocks.forEach(id => {
+					const slot = document.createElement("div");
+					slot.className = "inv-slot";
+					slot.title = BLOCKS[id]?.name;
+					slot.style.width = "36px"; slot.style.height = "36px"; slot.style.border = "2px solid #555"; slot.style.background = "#8b8b8b";
+					const icon = makeBlockIcon(id, 28);
+					icon.className = "block-icon";
+					slot.appendChild(icon);
+					slot.addEventListener("click", () => { hotbar[selectedSlot] = { id, count: 64 }; updateHotbarUI(); });
+					gridContainer.appendChild(slot);
+					});
+				}
+			}
+	
+		renderGrid();
+	
+		// 5. Hotbar UI at the bottom
+	
+		const hbSlots = document.getElementById("inv-hotbar-slots");
+		if (hbSlots) {
+			hbSlots.innerHTML = "";
+			for (let i = 0; i < 9; i++) {
+				const slot = document.createElement("div"); slot.className = "inv-slot" + (i === selectedSlot ? " active" : "");
+				if (hotbar[i]) { const icon = makeBlockIcon(hotbar[i].id, 28); icon.className = "block-icon"; slot.appendChild(icon); }
+				slot.addEventListener("click", () => { selectedSlot = i; updateHotbarUI(); updateInventoryUI(); });
+				hbSlots.appendChild(slot);
+			}
+		}
+	}
 
-        function renderGrid() {
-            gridContainer.innerHTML = "";
-            if (activeInvTab === "survival") {
-                for (let i = 0; i < 27; i++) {
-                    const slot = document.createElement("div");
-                    slot.className = "inv-slot";
-                    slot.style.width = "36px";
-                    slot.style.height = "36px";
-                    slot.style.border = "2px solid #555";
-                    slot.style.background = "#8b8b8b";
-                    if (inventory[i]) {
-                        const icon = makeBlockIcon(inventory[i].id, 28);
-                        icon.className = "block-icon";
-                        slot.appendChild(icon);
-                    }
-                    
-                    const cursor = document.createElement("div");
-                    cursor.className = "curs-slot";
-                    cursor.style.width = "36px";
-                    cursor.style.height = "36px";
-                    cursor.style.border = "2px solid #555";
-                    cursor.style.background = "#8b8b8b";
-                    const cursicon = makeBlockIcon(inventory[i].id, 28);
-                    cursicon.className = "block-icon";
-                    curs.appendChild(cursicon);
-                    
-                    slot.addEventListener("click", () => {
-                        t = inventory[i];       // Save what's currently in your hand
-                        inventory[i] = cursor;  // Put the inventory item in your hand
-                        cursor = t;                     // Put what was in your hand into the inventory
-                        updateInventoryUI();
-                        updateHotbarUI();                     // Refresh the bottom bar
-                        renderGrid();                         // Refresh the inventory grid
-                    });
-                    gridContainer.appendChild(slot);
-                }
-            } else {
-                let displayedBlocks = [];
-                if (activeInvTab === "search") {
-                    displayedBlocks = ALL_BLOCK_IDS.filter(id => BLOCKS[id].name.toLowerCase().includes(searchQuery));
-                } else {
-                    displayedBlocks = ALL_BLOCK_IDS.filter(id => (BLOCKS[id].tab || "building_blocks") === activeInvTab);
-                }
-                displayedBlocks.forEach(id => {
-                    const slot = document.createElement("div");
-                    slot.className = "inv-slot";
-                    slot.title = BLOCKS[id]?.name;
-                    slot.style.width = "36px";
-                    slot.style.height = "36px";
-                    slot.style.border = "2px solid #555";
-                    slot.style.background = "#8b8b8b";
-                    const icon = makeBlockIcon(id, 28);
-                    icon.className = "block-icon";
-                    slot.appendChild(icon);
-                    slot.addEventListener("click", () => {
-                        hotbar[selectedSlot] = {
-                            id,
-                            count: 64
-                        };
-                        updateHotbarUI();
-                    });
-                    gridContainer.appendChild(slot);
-                });
-            }
-        }
-        renderGrid();
-        // 5. Hotbar UI at the bottom
-        const hbSlots = document.getElementById("inv-hotbar-slots");
-        if (hbSlots) {
-            hbSlots.innerHTML = "";
-            for (let i = 0; i < 9; i++) {
-                const slot = document.createElement("div");
-                slot.className = "inv-slot" + (i === selectedSlot ? " active" : "");
-                if (hotbar[i]) {
-                    const icon = makeBlockIcon(hotbar[i].id, 28);
-                    icon.className = "block-icon";
-                    slot.appendChild(icon);
-                }
-                hbSlots.appendChild(slot);
-            }
-        }
-    }
     // ============================================================
     // KEYBIND MENU
     // ============================================================
