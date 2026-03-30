@@ -770,10 +770,27 @@ function main() {
     const cursor = document.createElement("div");
     cursor.className = "curs-slot";
     cursor.style.width = "36px";
+    cursor.style.position = "fixed";
+    cursor.style.pointerEvents = "none";
+    cursor.style.zIndex = "9999";
+    document.body.appendChild(cursor);
     cursor.style.height = "36px";
     const cursicon = makeBlockIcon(inventory[i].id, 28);
     cursicon.className = "block-icon";
     cursor.appendChild(cursicon);
+
+    function updateCursorIconPos(e) {
+        if (inventoryOpen) {
+            cursor.style.display = "block";
+            cursor.style.left = (e.clientX - 20) + "px";
+            cursor.style.top = (e.clientY - 20) + "px";
+        } else {
+            cursor.style.display = "none";
+            cursor..style.innerHTML = "";
+        }
+    }
+
+    window.addEventListener("mousemove", updateCursorIconPos);
     
     function updateHotbarUI() {
         const el = document.getElementById("hotbar");
