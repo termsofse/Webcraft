@@ -1004,6 +1004,6 @@ function main() {
                 // Non render based things
                 tickAccumulator -= TICK_RATE; 
             }
-        
         }
+    requestAnimationFrame(gameLoop);
 } // end main()
