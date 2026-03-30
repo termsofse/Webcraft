@@ -766,6 +766,15 @@ function main() {
     // ============================================================
     // INVENTORY UI (NEW TAB SYSTEM)
     // ============================================================
+    // Cursor Slot
+    const cursor = document.createElement("div");
+    cursor.className = "curs-slot";
+    cursor.style.width = "36px";
+    cursor.style.height = "36px";
+    const cursicon = makeBlockIcon(inventory[i].id, 28);
+    cursicon.className = "block-icon";
+    cursor.appendChild(cursicon);
+    
     function updateHotbarUI() {
         const el = document.getElementById("hotbar");
         if (!el) return;
@@ -779,8 +788,12 @@ function main() {
                 slot.appendChild(icon);
             }
             slot.addEventListener("click", () => {
-                selectedSlot = i;
-                updateHotbarUI();
+                t = hotbar[selectedSlot];       // Save what's currently in your hand
+                hotbar[selectedSlot] = cursor;  // Put the inventory item in your hand
+                cursor = t;                     // Put what was in your hand into the inventory
+                updateInventoryUI();
+                updateHotbarUI();                     // Refresh the bottom bar
+                renderGrid();                         // Refresh the inventory grid
             });
             el.appendChild(slot);
         }
@@ -880,10 +893,21 @@ function main() {
                         icon.className = "block-icon";
                         slot.appendChild(icon);
                     }
+                    
+                    const cursor = document.createElement("div");
+                    cursor.className = "curs-slot";
+                    cursor.style.width = "36px";
+                    cursor.style.height = "36px";
+                    cursor.style.border = "2px solid #555";
+                    cursor.style.background = "#8b8b8b";
+                    const cursicon = makeBlockIcon(inventory[i].id, 28);
+                    cursicon.className = "block-icon";
+                    curs.appendChild(cursicon);
+                    
                     slot.addEventListener("click", () => {
-                        const t = hotbar[selectedSlot];       // Save what's currently in your hand
-                        hotbar[selectedSlot] = inventory[i];  // Put the inventory item in your hand
-                        inventory[i] = t;                     // Put what was in your hand into the inventory
+                        t = inventory[i];       // Save what's currently in your hand
+                        inventory[i] = cursor;  // Put the inventory item in your hand
+                        cursor = t;                     // Put what was in your hand into the inventory
                         updateInventoryUI();
                         updateHotbarUI();                     // Refresh the bottom bar
                         renderGrid();                         // Refresh the inventory grid
@@ -989,19 +1013,21 @@ function main() {
     // GAME LOOP
     // ============================================================
    let lastTime = performance.now();
-        let tickAccumulator = 0; // This "collects" time for logic
-        const TICK_RATE = 0.05;  // 20 ticks per second (50ms)
+        let tickAccumulator = 0;
+        const TICK_RATE = 0.05;
         
         function gameLoop(now) {
+            //Render Tick
             const dt = Math.min((now - lastTime) / 1000, 0.05);
             lastTime = now;
             updatePhysics(dt); 
             render(); 
             tickAccumulator += dt; 
             requestAnimationFrame(gameLoop);
-            
+
+            // Game Tick
             while (tickAccumulator >= TICK_RATE) {
-                // Non render based things
+                // Non render-based things
                 tickAccumulator -= TICK_RATE; 
             }
         }
