@@ -988,16 +988,22 @@ function main() {
     // ============================================================
     // GAME LOOP
     // ============================================================
-    let lastTime = performance.now();
-
-    function gameLoop(now) {
-        const dt = Math.min((now - lastTime) / 1000, 0.05);
-        lastTime = now;
-        updatePhysics(dt);
-        render();
-        updateHotbarUI();
-        requestAnimationFrame(gameLoop);
-    }
-    updateHotbarUI();
-    requestAnimationFrame(gameLoop);
+   let lastTime = performance.now();
+        let tickAccumulator = 0; // This "collects" time for logic
+        const TICK_RATE = 0.05;  // 20 ticks per second (50ms)
+        
+        function gameLoop(now) {
+            const dt = Math.min((now - lastTime) / 1000, 0.05);
+            lastTime = now;
+            updatePhysics(dt); 
+            render(); 
+            tickAccumulator += dt; 
+            requestAnimationFrame(gameLoop);
+            
+            while (tickAccumulator >= TICK_RATE) {
+                // Non render based things
+                tickAccumulator -= TICK_RATE; 
+            }
+        
+        }
 } // end main()
