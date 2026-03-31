@@ -1,10 +1,5 @@
-/*
-
-* Minecraft HTML
-
-*/
 // ============================================================
-// THREE.JS SETUP
+//#region THREE.JS SETUP
 // ============================================================
 document.addEventListener('contextmenu', event => event.preventDefault());
 const THREE_CDN = "https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js";
@@ -16,10 +11,12 @@ function loadThree(cb) {
     document.head.appendChild(s);
 }
 loadThree(main);
+//#endregion
 
 function main() {
+
     // ============================================================
-    // BLOCK DEFINITIONS
+    //#region BLOCK DEFINITIONS
     // ============================================================
     // topTex/sideTex/bottomTex = PNG filenames in textures/
     // top/side/bottom = fallback hex if texture hasn't loaded
@@ -168,14 +165,16 @@ function main() {
         },
     };
     const ALL_BLOCK_IDS = Object.keys(BLOCKS).map(Number).filter(id => id !== 0);
+    //#endregion
     // ============================================================
-    // WORLD CONFIG
+    //#region WORLD CONFIG
     // ============================================================
     const WORLD_SIZE = 32;
     const WORLD_HEIGHT = 64;
     const PLATFORM_Y = 4;
+    //#endregion
     // ============================================================
-    // KEYBINDS
+    //#region KEYBINDS
     // ============================================================
     let keybinds = {
         forward: "KeyW",
@@ -199,8 +198,9 @@ function main() {
         keybindMenu: "Keybind Menu",
         pause: "Pause",
     };
+    //#endregion
     // ============================================================
-    // THREE.JS RENDERER & SCENE
+    //#region THREE.JS RENDERER & SCENE
     // ============================================================
     const renderer = new THREE.WebGLRenderer({
         canvas: document.getElementById("game"),
@@ -226,8 +226,9 @@ function main() {
         camera.aspect = window.innerWidth / window.innerHeight;
         camera.updateProjectionMatrix();
     });
+    //#endregion
     // ============================================================
-    // BLOCK MESH CACHE
+    //#region BLOCK MESH CACHE
     // ============================================================
     function getMaterials(id) {
         const def = BLOCKS[id];
@@ -300,8 +301,9 @@ function main() {
         world[x][y][z] = id;
         rebuildMeshes();
     }
+    //#endregion
     // ============================================================
-    // TEXTURE LOADING
+    //#region TEXTURE LOADING
     // ============================================================
     const texLoader = new THREE.TextureLoader();
     const TEX = {};
@@ -404,8 +406,9 @@ function main() {
     highlightMesh.visible = false;
     scene.add(highlightMesh);
     rebuildMeshes();
+    //#endregion
     // ============================================================
-    // PLAYER & INVENTORY GLOBALS
+    //#region PLAYER & INVENTORY GLOBALS
     // ============================================================
     const player = {
         x: WORLD_SIZE / 2 + 0.5,
@@ -490,8 +493,9 @@ function main() {
     let pointerLocked = false;
     const keys = {};
     let lastSpaceTime = 0;
+    //#endregion
     // ============================================================
-    // INPUT
+    //#region INPUT
     // ============================================================
     function getAction(code) {
         for (const [a, b] of Object.entries(keybinds))
@@ -594,8 +598,9 @@ function main() {
         document.getElementById("pause-overlay").classList.add("hidden");
         renderer.domElement.requestPointerLock();
     });
+    //#endregion
     // ============================================================
-    // DDA RAY CAST
+    //#region DDA RAY CAST
     // ============================================================
     function castRay() {
         const dir = new THREE.Vector3(0, 0, -1);
@@ -643,8 +648,9 @@ function main() {
         }
         return null;
     }
+    //#endregion
     // ============================================================
-    // PHYSICS
+    //#region PHYSICS
     // ============================================================
     const GRAVITY = 25;
 
@@ -724,8 +730,9 @@ function main() {
             player.vy = 0;
         }
     }
+    //#endregion
     // ============================================================
-    // RENDER
+    //#region RENDER
     // ============================================================
     function render() {
         camera.position.set(player.x, player.y, player.z);
@@ -745,8 +752,9 @@ function main() {
             `${player.flying ? "FLYING" : "WALKING"} | ${player.onGround ? "Ground" : "Air"}<br>` +
             `Block: ${hotbar[selectedSlot]?.id ? BLOCKS[hotbar[selectedSlot].id].name : "Empty"}`;
     }
+    //#endregion
     // ============================================================
-    // BLOCK ICON RENDERER
+    //#region BLOCK ICON RENDERER
     // ============================================================
 
     function makeBlockIcon(blockId, size = 32) {
@@ -763,10 +771,10 @@ function main() {
         img.style.imageRendering = "pixelated"; // Keeps that Minecraft look
         return img;
     }
+    //#endregion
     // ============================================================
-    // INVENTORY UI (NEW TAB SYSTEM)
+    //#region INVENTORY UI (NEW TAB SYSTEM)
     // ============================================================
-
     function updateHotbarUI() {
 		const el = document.getElementById("hotbar");
 		if (!el) return;
@@ -918,9 +926,9 @@ function main() {
 			}
 		}
 	}
-
+    //#endregion
     // ============================================================
-    // KEYBIND MENU
+    //#region KEYBIND MENU
     // ============================================================
     let listeningFor = null;
 
@@ -968,8 +976,9 @@ function main() {
         document.getElementById("keybind-overlay").classList.add("hidden");
         renderer.domElement.requestPointerLock();
     });
+    //#endregion
     // ============================================================
-    // GAME LOOP
+    //#region GAME LOOP
     // ============================================================
    let lastTime = performance.now();
         let tickAccumulator = 0;
@@ -992,4 +1001,5 @@ function main() {
             }
         }
     requestAnimationFrame(gameLoop);
+    //#endregion
 } // end main()
